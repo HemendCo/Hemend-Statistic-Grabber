@@ -15,14 +15,14 @@
 #define RESET_PIN 4 // Chip Enable
 #define DATA_PIN 3  // Input/Output
 #define CLOCK_PIN 2 // Serial Clock
-const DS1302 _CLOCK_MODULE = DS1302(RESET_PIN, DATA_PIN, CLOCK_PIN);
+#define _CLOCK_MODULE DS1302(RESET_PIN, DATA_PIN, CLOCK_PIN)
 class TimeModule : public BaseModule
 {
 public:
     TimeModule();
     void doCommand(String);
     void init(Time);
-    String update();
+    String getCurrentTime(bool hasSeconds = false);
 
 private:
     String dayAsString(const Time::Day day);

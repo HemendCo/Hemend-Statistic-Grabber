@@ -81,25 +81,25 @@ void updateModules()
     sdcard_module.readLog();
   }
 
-  auto cardPresent = rfid_module.update();
+  auto cardPresent = rfid_module.getCurrentTag();
   if (cardPresent.size != 0)
   {
 
     String uid = s(cardPresent.uidByte, cardPresent.size);
     String name = mapIDToName(uid);
-    sdcard_module.writeToLog(name + "," + time_module.update());
+    sdcard_module.writeToLog(name + "," + time_module.getCurrentTime());
     lcd.backlight();
     lcd.clear();
     lcd.print(name);
     lcd.setCursor(0, 1);
-    lcd.print(time_module.update());
+    lcd.print(time_module.getCurrentTime());
     delay(2000);
   }
   else
   {
     lcd.noBacklight();
     lcd.clear();
-    lcd.println(time_module.update());
+    lcd.println(time_module.getCurrentTime());
   }
   delay(250);
 }

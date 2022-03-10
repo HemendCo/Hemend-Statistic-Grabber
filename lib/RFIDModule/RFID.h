@@ -33,7 +33,7 @@ public:
     RFID();
     void doCommand(String);
     void init();
-    MFRC522::Uid update();
+    MFRC522::Uid getCurrentTag();
 
 private:
     MFRC522 rfid; // Create MFRC522 instance

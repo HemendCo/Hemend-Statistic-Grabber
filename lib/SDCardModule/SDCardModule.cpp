@@ -33,6 +33,7 @@ String SDCardModule::readLog()
         // }
         Serial.println(dataFile.readString());
         dataFile.seek(400);
+
         Serial.println(dataFile.readString());
         dataFile.close();
         return result;
@@ -44,16 +45,19 @@ String SDCardModule::readLog()
 }
 void SDCardModule::writeToLog(String info)
 {
-    File dataFile = SD.open(LOG_FILE_PATH.c_str(), FILE_WRITE);
-    if (dataFile)
-    {
-        dataFile.println(info);
-        dataFile.close();
-    }
-    else
-    {
-        Serial.println("ERROR");
-    }
+    SDCardModule::writeTo(LOG_FILE_PATH.c_str(), info);
+    SDCardModule::writeTo(LOG_BACKUP_BACKUP_PATH.c_str(), info);
+
+    // File dataFile = SD.open(LOG_FILE_PATH.c_str(), FILE_WRITE);
+    // if (dataFile)
+    // {
+    //     dataFile.println(info);
+    //     dataFile.close();
+    // }
+    // else
+    // {
+    //     Serial.println("ERROR");
+    // }
 }
 void SDCardModule::writeTo(String fileName, String info)
 {
@@ -65,11 +69,10 @@ void SDCardModule::writeTo(String fileName, String info)
     }
     else
     {
+        Serial.println("ERROR");
     }
 }
 void SDCardModule::deleteLog()
 {
-    String backUp = readLog();
-    writeTo(LOG_BACKUP_PATH, backUp);
     SD.remove((char *)LOG_FILE_PATH.c_str());
 }

@@ -15,10 +15,9 @@ void RFID::init()
     rfid.PCD_Init();
     rfid.PICC_HaltA(); // halt PICC
     rfid.PCD_StopCrypto1();
-
 }
 
-MFRC522::Uid RFID::update()
+MFRC522::Uid RFID::getCurrentTag()
 {
 
     if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial())
@@ -38,7 +37,7 @@ MFRC522::Uid RFID::update()
     //     Serial.print(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
     //     Serial.print(rfid.uid.uidByte[i], HEX);
     // }
-    
+
     return rfid.uid;
 
     // Dump debug info about the card; PICC_HaltA() is automatically called

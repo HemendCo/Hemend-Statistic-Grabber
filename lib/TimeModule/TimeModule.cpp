@@ -8,17 +8,26 @@ TimeModule::TimeModule()
 void TimeModule::doCommand(String command)
 {
 }
-String TimeModule::update()
+String TimeModule::getCurrentTime(bool hasSeconds)
 {
     Time t = _CLOCK_MODULE.time();
 
     // Format the time and date and insert into the temporary buffer.
     char buf[50];
-    snprintf(buf, sizeof(buf), "%s%04d-%02d-%02d %02d:%02d:%02d",
-             "",
-             t.yr, t.mon, t.date,
-             t.hr, t.min, t.sec);
-
+    if (hasSeconds)
+    {
+        snprintf(buf, sizeof(buf), "%s%04d-%02d-%02d %02d:%02d:%02d",
+                 "",
+                 t.yr, t.mon, t.date,
+                 t.hr, t.min, t.sec);
+    }
+    else
+    {
+        snprintf(buf, sizeof(buf), "%s%04d-%02d-%02d %02d:%02d",
+                 "",
+                 t.yr, t.mon, t.date,
+                 t.hr, t.min);
+    }
     // Print the formatted string to serial so we can see the time.
     return buf;
 }
