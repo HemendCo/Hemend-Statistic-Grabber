@@ -23,8 +23,9 @@
  * More pin layouts for other boards can be found here: https://github.com/miguelbalboa/rfid#pin-layout
  */
 
-#define RST_PIN 9 // Configurable, see typical pin layout above
-#define SS_PIN 10 // Configurable, see typical pin layout above
+const int RST_PIN = 9;
+
+const int SS_PIN_RFID = 10;
 
 class RFID : public BaseModule
 {

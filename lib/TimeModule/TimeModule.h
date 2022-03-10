@@ -22,10 +22,11 @@ public:
     TimeModule();
     void doCommand(String);
     void init(Time);
-    void update();
+    String update();
 
 private:
     String dayAsString(const Time::Day day);
+    int toEpoch(int year, int month, int day, int hour, int minutes, int seconds);
 };
 
 #endif
