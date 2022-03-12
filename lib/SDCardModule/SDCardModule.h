@@ -4,14 +4,14 @@
 
 #include "Arduino.h"
 #include <BaseModule.h>
-#include <String.h>
 #include <SD.h>
 #define SD_CARD_SELECT 5
 #define SD_CARD_MOSI 6
 #define SD_CARD_MISO 7
 #define SD_CARD_CLOCK 8
-const String LOG_FILE_PATH = "datalog.txt";
-const String LOG_BACKUP_BACKUP_PATH = "datalog.back";
+#define LOG_FILE_PATH "datalog.txt"
+#define LOG_FILE_BACKUP_DIR "backup"
+#define LOG_FILE_BACKUP_FILE_PATH "backup/datalog.txt"
 
 class SDCardModule : public BaseModule
 {
@@ -20,9 +20,9 @@ public:
     void doCommand(String);
     void init();
     void update();
-    String readLog();
+    void loadLogToSerial();
     void writeToLog(String info);
-    void writeTo(String fileName, String info);
+    void writeTo(const char *fileName, String info);
     void deleteLog();
 
 private:

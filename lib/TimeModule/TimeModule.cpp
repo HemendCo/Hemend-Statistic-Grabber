@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "TimeModule.h"
-#include <String.h>
 TimeModule::TimeModule()
 {
 }

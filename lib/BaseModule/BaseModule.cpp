@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "BaseModule.h"
-#include <String.h>
 BaseModule::BaseModule()
 {
 }

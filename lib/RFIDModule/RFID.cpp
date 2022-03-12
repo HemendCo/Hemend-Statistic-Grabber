@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "RFID.h"
-#include <String.h>
 RFID::RFID()
 {
     rfid = MFRC522(SS_PIN_RFID, RST_PIN);

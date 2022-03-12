@@ -4,8 +4,6 @@
 
 #include "Arduino.h"
 #include <BaseModule.h>
-#include <String.h>
-#include <MFRC522.h>
 
 #define SERIAL_BAUD 9600
 

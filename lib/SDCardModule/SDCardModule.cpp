@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "SDCardModule.h"
-#include <String.h>
 SDCardModule::SDCardModule()
 {
 }
@@ -18,35 +17,43 @@ void SDCardModule::init()
     {
         Serial.println("Card Error");
     }
+
+    SD.mkdir((char *)LOG_FILE_BACKUP_DIR);
 }
 
-String SDCardModule::readLog()
+void SDCardModule::loadLogToSerial()
 {
-    File dataFile = SD.open(LOG_FILE_PATH.c_str());
+    Serial.println("LOGFILE_BEGIN");
+
+    File dataFile = SD.open(LOG_FILE_PATH);
+    dataFile.setTimeout(500);
     if (dataFile)
     {
-        String result = "";
-        // while (dataFile.available())
-        // {
-
-        //     result += (char)dataFile.read();
-        // }
-        Serial.println(dataFile.readString());
-        dataFile.seek(400);
-
-        Serial.println(dataFile.readString());
-        dataFile.close();
-        return result;
+        char current = '0';
+        do
+        {
+            current = (char)dataFile.read();
+            if ((int)current == -1)
+                break;
+            Serial.print(current);
+            // count++;
+            dataFile.flush();
+        } while ((int)current != -1);
+        Serial.println("LOGFILE_END");
     }
     else
     {
-        return "error";
+
+        Serial.println("LOGFILE_ERROR");
     }
+    // dataFile.flush();
+    dataFile.close();
 }
 void SDCardModule::writeToLog(String info)
 {
-    SDCardModule::writeTo(LOG_FILE_PATH.c_str(), info);
-    SDCardModule::writeTo(LOG_BACKUP_BACKUP_PATH.c_str(), info);
+    writeTo(LOG_FILE_PATH, info);
+
+    writeTo(LOG_FILE_BACKUP_FILE_PATH, info);
 
     // File dataFile = SD.open(LOG_FILE_PATH.c_str(), FILE_WRITE);
     // if (dataFile)
@@ -59,20 +66,22 @@ void SDCardModule::writeToLog(String info)
     //     Serial.println("ERROR");
     // }
 }
-void SDCardModule::writeTo(String fileName, String info)
+void SDCardModule::writeTo(const char *fileName, String info)
 {
-    File dataFile = SD.open(fileName.c_str(), FILE_WRITE);
+    File dataFile = SD.open(fileName, FILE_WRITE);
     if (dataFile)
     {
         dataFile.println(info);
-        dataFile.close();
     }
     else
     {
-        Serial.println("ERROR");
+        Serial.println("ERROR on " + String(fileName));
     }
+    // dataFile.flush();
+    delay(35);
+    dataFile.close();
 }
 void SDCardModule::deleteLog()
 {
-    SD.remove((char *)LOG_FILE_PATH.c_str());
+    SD.remove((char *)LOG_FILE_PATH);
 }

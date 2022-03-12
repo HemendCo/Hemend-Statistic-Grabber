@@ -3,7 +3,6 @@
 #define BaseModule_h
 
 #include "Arduino.h"
-#include <String.h>
 class BaseModule
 {
 public:

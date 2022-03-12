@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "SerialModule.h"
-#include <String.h>
 SerialModule::SerialModule()
 {
 }

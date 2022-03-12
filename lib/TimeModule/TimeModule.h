@@ -4,7 +4,6 @@
 
 #include "Arduino.h"
 #include <BaseModule.h>
-#include <String.h>
 #include "DS1302.h"
 
 // Set the appropriate digital I/O pin connections. These are the pin
