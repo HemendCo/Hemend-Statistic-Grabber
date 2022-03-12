@@ -51,7 +51,7 @@ void initModules()
   lcd.clear();
   lcd.print("BOOT");
   delay(500);
-  lcd.noBacklight();
+  // lcd.noBacklight();
   Serial.println('BOOT');
 }
 void updateModules()
@@ -76,7 +76,7 @@ void updateModules()
   }
   else
   {
-    lcd.noBacklight();
+    // lcd.noBacklight();
     lcd.clear();
     lcd.println(time_module.getCurrentTime());
   }
