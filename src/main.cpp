@@ -51,8 +51,8 @@ void initModules()
   lcd.clear();
   lcd.print("BOOT");
   delay(500);
-  // lcd.noBacklight();
-  Serial.println('BOOT');
+  lcd.noBacklight();
+  Serial.println("BOOT");
 }
 void updateModules()
 {
@@ -76,7 +76,7 @@ void updateModules()
   }
   else
   {
-    // lcd.noBacklight();
+    lcd.noBacklight();
     lcd.clear();
     lcd.println(time_module.getCurrentTime());
   }
@@ -133,9 +133,41 @@ void handleSerial()
 String mapIDToName(String uid)
 {
   String result;
-  if (uid == "396458C2")
+  if (uid == "B3FB3797")
   {
-    result = "Inosoft00";
+    result = "A. Forootan";
+  }
+  else if (uid == "73659297")
+  {
+    result = "L. Javadi";
+  }
+  else if (uid == "396458C2")
+  {
+    result = "B.Arast";
+  }
+  else if (uid == "6CE1D55B")
+  {
+    result = "A. Hoseini";
+  }
+  else if (uid == "63034997")
+  {
+    result = "M. Fallahnejad";
+  }
+  else if (uid == "03796897")
+  {
+    result = "A. Alikhani";
+  }
+  else if (uid == "C3C88197")
+  {
+    result = "K. Pazooki";
+  }
+  else if (uid == "632A1497")
+  {
+    result = "A. Aryaeifar";
+  }
+  else if (uid == "73756997")
+  {
+    result = "S. Gholami";
   }
   else
   {
