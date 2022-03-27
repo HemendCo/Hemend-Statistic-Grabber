@@ -1,5 +1,13 @@
 #include "Arduino.h"
 #include "SDCardModule.h"
+
+#define BEEP_PIN A0
+void error()
+{
+    tone(BEEP_PIN, 900);
+    delay(500);
+    noTone(BEEP_PIN);
+}
 SDCardModule::SDCardModule()
 {
 }
@@ -29,6 +37,8 @@ void SDCardModule::loadLogToSerial()
     dataFile.setTimeout(500);
     if (dataFile)
     {
+
+        // CONVERT TO File::read(void *buf, uint16_t nbyte)
         char current = '0';
         do
         {
@@ -51,22 +61,17 @@ void SDCardModule::loadLogToSerial()
 }
 void SDCardModule::writeToLog(String info)
 {
-    writeTo(LOG_FILE_PATH, info);
-
-    writeTo(LOG_FILE_BACKUP_FILE_PATH, info);
-
-    // File dataFile = SD.open(LOG_FILE_PATH.c_str(), FILE_WRITE);
-    // if (dataFile)
-    // {
-    //     dataFile.println(info);
-    //     dataFile.close();
-    // }
-    // else
-    // {
-    //     Serial.println("ERROR");
-    // }
+    if (!writeTo(LOG_FILE_PATH, info))
+    {
+        error();
+    }
+    delay(50);
+    if (!writeTo(LOG_FILE_BACKUP_FILE_PATH, info))
+    {
+        error();
+    }
 }
-void SDCardModule::writeTo(const char *fileName, String info)
+bool SDCardModule::writeTo(const char *fileName, String info)
 {
     File dataFile = SD.open(fileName, FILE_WRITE);
     if (dataFile)
@@ -76,10 +81,12 @@ void SDCardModule::writeTo(const char *fileName, String info)
     else
     {
         Serial.println("ERROR on " + String(fileName));
+        return false;
     }
     // dataFile.flush();
     delay(35);
     dataFile.close();
+    return true;
 }
 void SDCardModule::deleteLog()
 {

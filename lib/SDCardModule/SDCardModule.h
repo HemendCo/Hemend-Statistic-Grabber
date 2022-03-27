@@ -22,7 +22,7 @@ public:
     void update();
     void loadLogToSerial();
     void writeToLog(String info);
-    void writeTo(const char *fileName, String info);
+    bool writeTo(const char *fileName, String info);
     void deleteLog();
 
 private:

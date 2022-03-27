@@ -71,7 +71,7 @@ void updateModules()
     lcd.setCursor(0, 1);
     lcd.print(time_module.getCurrentTime());
     delay(150);
-    sdcard_module.writeToLog(name + "," + time_module.getCurrentTime());
+    sdcard_module.writeToLog(uid + "," + time_module.getCurrentTime());
     delay(2000);
   }
   else
@@ -135,7 +135,7 @@ String mapIDToName(String uid)
   String result;
   if (uid == "B3FB3797")
   {
-    result = "A. Forootan";
+    result = "A. Foroutan";
   }
   else if (uid == "73659297")
   {
@@ -143,7 +143,7 @@ String mapIDToName(String uid)
   }
   else if (uid == "396458C2")
   {
-    result = "B.Arast";
+    result = "B. Arast";
   }
   else if (uid == "6CE1D55B")
   {
@@ -151,7 +151,7 @@ String mapIDToName(String uid)
   }
   else if (uid == "63034997")
   {
-    result = "M. Fallahnejad";
+    result = "M. Fallahnezhad";
   }
   else if (uid == "03796897")
   {
@@ -185,7 +185,6 @@ String s(byte *array, int size)
 
   for (int cnt = 0; cnt < size; cnt++)
   {
-
     sprintf(&result[cnt * 2], "%02X", array[cnt]);
   }
 
