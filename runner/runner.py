@@ -1,29 +1,34 @@
 import serial
 import pandas as pd
 from configparser import ConfigParser as cfgParser
-from datetime import datetime
 from persiantools.jdatetime import JalaliDateTime as jd
-
+from datetime import datetime
 import time
-import sys
-# import getch
+import json
+import requests
+def delay(seconds: float):
+    time.sleep(seconds)
 
-configDir = './config/'
-settingsPath = configDir+'settings.ini'
-shouldDelete = '--dellog' in sys.argv
 
-print('will delete file ' + str(shouldDelete))
-print('loading settings')
-settings = cfgParser()
+configDir='./config/'
+settingsPath=configDir+'settings.ini'
+#loading information
+settings=cfgParser()
 settings.read(settingsPath)
 
+dateTimeTemp = jd.now().isoformat()
 
 # load output file path and user mapper
-PLAIN_OUTPUT_FILE = settings.get('Path', 'PLAIN_OUTPUT_FILE')
-BACKUP_OUTPUT_FILE = settings.get('Path', 'BACKUP_OUTPUT_FILE')
-FINAL_OUTPUT_FILE = settings.get('Path', 'FINAL_OUTPUT_FILE')
-USERS_DICTIONARY_FILE = settings.get('Path', 'USERS_DICTIONARY_FILE')
-usersMap = pd.read_csv(USERS_DICTIONARY_FILE)
+PLAIN_OUTPUT_CSV_FILE = settings.get(
+    'Path', 'PLAIN_OUTPUT_CSV_FILE').replace('%dt', dateTimeTemp)
+BACKUP_OUTPUT_CSV_FILE = settings.get(
+    'Path', 'BACKUP_OUTPUT_CSV_FILE').replace('%dt', dateTimeTemp)
+FINAL_OUTPUT_CSV_FILE = settings.get(
+    'Path', 'FINAL_OUTPUT_CSV_FILE').replace('%dt', dateTimeTemp)
+# FINAL_OUTPUT_XLSX_FILE = settings.get(
+#     'Path', 'FINAL_OUTPUT_XLSX_FILE').replace('%dt', dateTimeTemp)
+USERS_DICTIONARY_CSV_FILE = settings.get('Path', 'USERS_DICTIONARY_CSV_FILE')
+usersMap = pd.read_csv(USERS_DICTIONARY_CSV_FILE)
 
 # board info
 SERIAL_PORT_NAME = settings.get('SerialConfig', 'SERIAL_PORT_NAME')
@@ -41,6 +46,10 @@ TEXT_FORMATTER_BOOT = settings.get('Formatting', 'BOOT_TEXT')
 TEXT_FORMATTER_ERROR = settings.get('Formatting', 'ERROR_TEXT')
 BASE_ENCODING = 'utf-8'
 
+
+usersMap=pd.read_csv(USERS_DICTIONARY_CSV_FILE)
+
+
 print('connecting to board')
 serialClient = serial.Serial(SERIAL_PORT_NAME, SERIAL_BAUD_RATE)
 
@@ -49,20 +58,19 @@ def sendCommand(command):
     b = bytes(command, BASE_ENCODING)
     serialClient.write(b)
 
-
 waitingForBoot = True
 while(waitingForBoot):
     line = str(serialClient.readline().decode(BASE_ENCODING))
     if line.rfind(TEXT_FORMATTER_BOOT) >= 0:
         waitingForBoot = False
 print('Boot Completed')
-time.sleep(1)
+delay(1)
 
 print('sync time')
 timeCommand = SET_TIME_COMMAND.replace('#year', str(datetime.now().year).rjust(4, '0')).replace('#month', str(datetime.now().month).rjust(2, '0')).replace('#day', str(datetime.now().day).rjust(2, '0')).replace('#hour', str(
     datetime.now().hour).rjust(2, '0')).replace('#minute', str(datetime.now().minute).rjust(2, '0')).replace('#seconds', str(datetime.now().second).rjust(2, '0')).replace('12OfWeek', str((datetime.now().weekday()+1) % 7+1))
 sendCommand(timeCommand)
-time.sleep(1)
+delay(1)
 
 print('reading log file')
 sendCommand(READ_FILE_COMMAND)
@@ -82,48 +90,59 @@ logData = logData.replace(TEXT_FORMATTER_PREFIX, '')
 logData = logData.replace(TEXT_FORMATTER_SUFFIX, '')
 logData.replace('\r\n', '\n')
 logData.replace('\r', '')
-time.sleep(1)
+delay(1)
 
-if shouldDelete:
-    print('delete log')
-    sendCommand(DELETE_FILE_COMMAND)
-else:
-    print('skipping delete section')
-
-
+import sys
+for i in sys.argv:
+    print('sending command : '+i)
+    sendCommand(i)
+    delay(1)
 print('writing to backup')
-f = open(BACKUP_OUTPUT_FILE, "a")
+f = open(BACKUP_OUTPUT_CSV_FILE, "a")
 f.write(logData)
 f.close()
-
-
 def formatDateTime(input):
     date = datetime.fromisoformat(input)
     return (jd.to_jalali(date).isoformat().replace('T', ' '))
-
 
 print('final formatting')
 
 for index, row in usersMap.iterrows():
     logData = logData.replace(row['BOARD_ID'], row['USER_ID'])
 logData = logData.replace('\n\n', '\n')
+logData = logData.replace(',\n', '\n')
 
-
-f = open(PLAIN_OUTPUT_FILE, "w")
-f.write('ID,DATE_TIME'+logData)
+f = open(FINAL_OUTPUT_CSV_FILE, "w")
+f.write('id,date_time'+logData)
 f.close()
-
-
-# reformat data
-data = pd.read_csv(PLAIN_OUTPUT_FILE)
-for index, row in data.iterrows():
-    row['DATE_TIME'] = formatDateTime(row['DATE_TIME'])
-data.to_csv(FINAL_OUTPUT_FILE)
-
-
-# f = open(FINAL_OUTPUT_FILE, "w")
-# f.write('ID,DATE_TIME'+logData)
-# f.close()
-
-print('done! press any key to close.')
-# getch.getch()
+# data = pd.read_csv(PLAIN_OUTPUT_CSV_FILE)
+# data.to_csv(FINAL_OUTPUT_CSV_FILE)
+dateTimeKey='date_time'
+idKey='id'
+presentKey='is_in'
+data=pd.read_csv('result.csv')
+data.insert(len(data.columns), presentKey, 0)
+data.head()
+def getKey(row):
+    date=row[dateTimeKey].split(' ')[0]
+    return date+row[idKey]
+userIn=[]
+for i in range(len(data)):
+    item=data.iloc[i]
+    
+    if(getKey(item) not in userIn):
+        data.iat[i, data.columns.get_loc(presentKey)] =1
+        userIn.append(getKey(item))
+    else:
+        data.iat[i, data.columns.get_loc(presentKey)] =0
+        userIn.remove(getKey(item))
+data.head(20)
+data.to_csv('test.csv')
+jsonData= {
+    'data':json.loads(data.to_json(orient ='records'))
+}
+# print(jsonData)
+url = 'https://staff.hemend.com/api/attendance'
+x = requests.post(url, json =jsonData)
+print(x.text)
+delay(500)

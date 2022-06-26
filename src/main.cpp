@@ -153,21 +153,25 @@ String mapIDToName(String uid)
   {
     result = "M. Fallahnezhad";
   }
-  else if (uid == "03796897")
+  else if (uid == "A3A23F97")
   {
     result = "A. Alikhani";
   }
   else if (uid == "C3C88197")
   {
-    result = "K. Pazooki";
+    result = "K. Pazouki";
   }
-  else if (uid == "632A1497")
+  else if (uid == "13488497")
   {
     result = "A. Aryaeifar";
   }
   else if (uid == "73756997")
   {
     result = "S. Gholami";
+  } 
+  else if (uid == "E34C5197")
+  {
+    result = "H. Ghasemzadeh";
   }
   else
   {

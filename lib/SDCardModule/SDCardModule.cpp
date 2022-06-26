@@ -66,10 +66,10 @@ void SDCardModule::writeToLog(String info)
         error();
     }
     delay(50);
-    if (!writeTo(LOG_FILE_BACKUP_FILE_PATH, info))
-    {
-        error();
-    }
+    // if (!writeTo(LOG_FILE_BACKUP_FILE_PATH, info))
+    // {
+    //     error();
+    // }
 }
 bool SDCardModule::writeTo(const char *fileName, String info)
 {
